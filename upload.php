@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <link href="assets/css/bootstrap.css" rel="stylesheet" />
 <link href="assets/css/bootstrap-fileupload.min.css" rel="stylesheet" />
 <!-- JQUERY SCRIPTS -->
@@ -20,14 +19,17 @@ echo '<h1 class="page-head-line">Upload a New File to DocStorage</h1>';
 echo '<div class="panel-body">';
 echo '<form method="post" enctype="multipart/form-data" action="">';
 echo '<input type="hidden" name="uploadedby" value="user@test.mail">';
-echo '<input type="hidden" name="MAX_FILE_SIZE" value="100000000">';
+echo '<input type="hidden" name="MAX_FILE_SIZE" value="10000000">';
 echo '<div class="form-group">';
 echo '<label class="control-label col-lg-4">File Upload</label>';
 echo '<div class="">';
 echo '<div class="fileupload fileupload-new" data-provides="fileupload">';
 echo '<div class="fileupload-preview thumbnail" style="width: 200px; height: 150px;"></div>';
 echo '<div class="row">';//buttons
-echo '<div class="col-md-2"><span class="btn btn-file btn-primary"><span class="fileupload-new">Select File</span><span class="fileupload-exists">Change</span>';
+echo '<div class="col-md-2">';
+echo '<span class="btn btn-file btn-primary">';
+echo '<span class="fileupload-new">Select File</span>';
+echo '<span class="fileupload-exists">Change</span>';
 echo '<input name="userfile" type="file"></span></div>';
 echo '<div class="col-md-2"><a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload">Remove</a></div>';
 echo '</div>';//end buttons
@@ -41,26 +43,28 @@ echo '</div>';//end panel-body
 echo '</div>';//end page-inner
 if (isset($_POST['submit']))
 {
-  
+   
 	$uploadDate=date("Y-m-d H:i:s");
+	$uploadDName=date("Y-m-d_H:i:s");
 	$uploadBy="user@test.mail";
-	$fileName=$_FILES['userfile']['name'];
+	$fileName=str_replace(" ","_",$_FILES['userfile']['name']);
+	$fileName=$uploadDName.$fileName;
 	$docType="pdf";
 	$tmpName=$_FILES['userfile']['tmp_name'];
 	$fileSize=$_FILES['userfile']['size'];
 	$fileType=$_FILES['userfile']['type'];
-    $path="/var/www/html/uploads/";
+    $path = "";
 	$fp=fopen($tmpName, 'r');
 	$content=fread($fp, filesize($tmpName));
 	fclose($fp);
-	$con = "";
-	$sql="Insert into `doc` (`file_name`, `file_size`, `file_type`,`upload_by`,`upload_date`,`path`,`content`,`status`) values ('$fileName', '$fileSize','$docType','$uploadBy','$uploadDate','$path','$con', 'active')";
+	$contentsClean=addslashes($content);
+	$sql="Insert into `doc` (`file_name`, `file_size`, `file_type`,`upload_by`,`upload_date`,`path`,`content`,`status`) values ('$fileName','$fileSize','$docType','$uploadBy','$uploadDate','$path','$contentsClean','active')";
 	$dblink->query($sql) or
 		die("Something went wrong with $sql<br>".$dblink->error);
-	$fp=fopen($path.$fileName,"wb") or
-		die("Could not open $path$fileName for writing");
-	fwrite($fp,$content);
-	fclose($fp);
-	header("192.168.56.102/upload.php?msg=success");
+	//$fp=fopen($path.$fileName,"wb") or
+	//	die("Could not open $path$fileName for writing");
+	//fwrite($fp,$content);
+	//fclose($fp);
+	header("upload.php?msg=success");
 }
 ?>
