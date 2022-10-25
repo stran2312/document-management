@@ -9,6 +9,7 @@
 <?php
 include("functions.php");
 $dblink=db_connect("document");
+session_start();
 echo '<div id="page-inner">';
 if (isset($_REQUEST['msg']) && ($_REQUEST['msg']=="success"))
 {
@@ -39,6 +40,11 @@ echo '<button type="submit" name="submit" value="submit" class="btn btn-lg btn-b
 echo '</form>';
 echo '</div>';//end panel-body
 echo '</div>';//end page-inner
+echo '<form action="" method="post">';
+echo '<div>';
+echo '<button type="submit" name="logout" value="logout" class="btn btn-lg btn-block btn-success">Logout</button>';
+echo '</div>';
+echo '</form>';
 if (isset($_POST['submit']))
 {
   
@@ -49,18 +55,24 @@ if (isset($_POST['submit']))
 	$tmpName=$_FILES['userfile']['tmp_name'];
 	$fileSize=$_FILES['userfile']['size'];
 	$fileType=$_FILES['userfile']['type'];
-    $path="/var/www/html/uploads/";
+    $path="uploads/";
 	$fp=fopen($tmpName, 'r');
 	$content=fread($fp, filesize($tmpName));
 	fclose($fp);
 	$con = "";
-	$sql="Insert into `doc` (`file_name`, `file_size`, `file_type`,`upload_by`,`upload_date`,`path`,`content`,`status`) values ('$fileName', '$fileSize','$docType','$uploadBy','$uploadDate','$path','$con', 'active')";
+	$tags = "";
+	$sql="Insert into `doc` (`file_name`, `file_size`, `file_type`,`upload_by`,`upload_date`,`path`,`content`,`status`, `tags`) values ('$fileName', '$fileSize','$docType','$uploadBy','$uploadDate','$path','$con', '1', '$tags')";
 	$dblink->query($sql) or
 		die("Something went wrong with $sql<br>".$dblink->error);
 	$fp=fopen($path.$fileName,"wb") or
 		die("Could not open $path$fileName for writing");
 	fwrite($fp,$content);
 	fclose($fp);
-	header("192.168.56.102/upload.php?msg=success");
+	header("upload.php?msg=success");
+}
+if(isset($_POST['logout'])){
+	
+	session_destroy();
+	header('refresh:1;location: login.php');
 }
 ?>

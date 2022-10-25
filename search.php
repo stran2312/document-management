@@ -7,7 +7,7 @@
 <script src="assets/js/bootstrap-fileupload.js"></script>
 <?php
 include("functions.php");
-$dblink=db_connect("docStorage");
+$dblink=db_connect("document");
 echo '<div id="page-inner">';
 echo '<h1 class="page-head-line">Search Files on DB</h1>';
 echo '<div class="panel-body">';
@@ -35,16 +35,16 @@ if (isset($_POST['submit']))
 	switch($searchType)
 	{
 		case "name":
-			$sql="Select `name`,`upload_date`,`upload_by`,`auto_id` from `documents` where `name` like '%$searchString%'";
+			$sql="Select `file_name`,`upload_date`,`upload_by`,`auto_id` from `doc` where `file_name` like '%$searchString%'";
 			break;
 		case "uploadBy":
-			$sql="Select `name`,`upload_date`,`upload_by`,`auto_id` from `documents` where `upload_by` like '%$searchString%'";
+			$sql="Select `file_name`,`upload_date`,`upload_by`,`auto_id` from `doc` where `upload_by` like '%$searchString%'";
 			break;
 		case "uploadDate":
-			$sql="Select `name`,`upload_date`,`upload_by`,`auto_id` from `documents` where `upload_date` like '%$searchString%'";
+			$sql="Select `file_name`,`upload_date`,`upload_by`,`auto_id` from `doc` where `upload_date` like '%$searchString%'";
 			break;
 		case "all":
-			$sql="Select `name`,`upload_date`,`upload_by`,`auto_id` from `documents`";
+			$sql="Select `file_name`,`upload_date`,`upload_by`,`auto_id` from `doc`";
 			break;
 		default:
 			redirect("search.php?msg=searchTypeError");
@@ -56,7 +56,7 @@ if (isset($_POST['submit']))
 	while ($data=$result->fetch_array(MYSQLI_ASSOC))
 	{
 		echo '<tr>';
-		echo '<td>'.$data['name'].'</td>';
+		echo '<td>'.$data['file_name'].'</td>';
 		echo '<td>'.$data['upload_date'].'</td>';
 		echo '<td><a href="view.php?fid='.$data['auto_id'].'">View</a></td>';
 		echo '</tr>';
