@@ -5,9 +5,14 @@
 <!-- BOOTSTRAP SCRIPTS -->
 <script src="assets/js/bootstrap.js"></script>
 <script src="assets/js/bootstrap-fileupload.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css">
+  
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
 <?php
 include("functions.php");
-$dblink=db_connect("docStorage");
+$dblink=db_connect("document");
 echo '<div id="page-inner">';
 echo '<h1 class="page-head-line">Search Files on DB</h1>';
 echo '<div class="panel-body">';
@@ -32,19 +37,25 @@ if (isset($_POST['submit']))
 {
 	$searchType=$_POST['searchType'];
 	$searchString=addslashes($_POST['searchString']);
+	$sql = "SELECT `auto_id`, `title` FROM `file_category`";
+	$result = $dblink->query($sql) or die("Something went wrong with $sql<br>".$dblink->error);
+	$category = array();
+	while($row = $result->fetch_array(MYSQLI_ASSOC)){
+		$category[$row['auto_id']] = $row['title'];
+	}
 	switch($searchType)
 	{
 		case "name":
-			$sql="Select `name`,`upload_date`,`upload_by`,`auto_id` from `documents` where `name` like '%$searchString%'";
+			$sql="Select `file_name`,`upload_date`,`upload_by`,`auto_id`,`category`,`status` from `doc` where `file_name` like '%$searchString%'";
 			break;
 		case "uploadBy":
-			$sql="Select `name`,`upload_date`,`upload_by`,`auto_id` from `documents` where `upload_by` like '%$searchString%'";
+			$sql="Select `file_name`,`upload_date`,`upload_by`,`auto_id`,`category`,`status` from `doc` where `upload_by` like '%$searchString%'";
 			break;
 		case "uploadDate":
-			$sql="Select `name`,`upload_date`,`upload_by`,`auto_id` from `documents` where `upload_date` like '%$searchString%'";
+			$sql="Select `file_name`,`upload_date`,`upload_by`,`auto_id`,`category`,`status` from `doc` where `upload_date` like '%$searchString%'";
 			break;
 		case "all":
-			$sql="Select `name`,`upload_date`,`upload_by`,`auto_id` from `documents`";
+			$sql="Select `file_name`,`upload_date`,`upload_by`,`auto_id`,`category`,`status` from `doc`";
 			break;
 		default:
 			redirect("search.php?msg=searchTypeError");
@@ -52,17 +63,32 @@ if (isset($_POST['submit']))
 	}
 	$result=$dblink->query($sql) or
 		die("Something went wrong with $sql<br>".$dblink->error);
-	echo '<table>';
+	echo '<table id="myTable">';
+	echo '<thead>';
+	echo '<th>Name</th>';
+	echo '<th>Upload Date</th>';
+	echo '<th>Category</th>';
+	echo '<th>Status</th>';
+	echo '<th>Action</th>';
+	echo '</thead>';
+	echo '<tbody>';
 	while ($data=$result->fetch_array(MYSQLI_ASSOC))
 	{
 		echo '<tr>';
-		echo '<td>'.$data['name'].'</td>';
+		echo '<td>'.$data['file_name'].'</td>';
 		echo '<td>'.$data['upload_date'].'</td>';
+		echo '<td>'.$category[$data['category']].'</td>';
+		echo '<td>'.$data['status'].'</td>';
 		echo '<td><a href="view.php?fid='.$data['auto_id'].'">View</a></td>';
 		echo '</tr>';
 	}
+	echo '</tbody>';
 	echo '</table>';
 }
 echo '</div>';//end panel-body
 echo '</div>';//end page-inner
 ?>
+<script>$(document).ready(function () {
+    $.noConflict();
+    var table = $('#myTable').DataTable();
+});</script>
