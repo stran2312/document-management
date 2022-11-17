@@ -2,8 +2,8 @@
 <?php
 function db_connect($db){
 	$hostname="localhost";
-    $username="root";
-    $password="";
+    $username="webuser";
+    $password="dK!tbUtOynI(.VBx";
     $dblink=new mysqli($hostname,$username,$password,$db);
 	if (mysqli_connect_errno())
     {
