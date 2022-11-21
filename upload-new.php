@@ -36,6 +36,14 @@ echo '</div>';//end fileupload fileupload-new
 echo '</div>';//end ""
 echo '</div>';//end form-group
 echo '<hr>';
+echo '<label>File category: </label>'; //choosing the file category
+echo '<select name="category">';//start select option
+$sql = 'SELECT `auto_id`, `title` FROM `category`';
+$result = $dblink->query($sql) or die("Something went wrong with $sql<br>".$dblink->error);
+while($row = $result->fetch_array(MYSQLI_ASSOC)){
+	echo '<option value="'.$row['auto_id'].'">'.$row['title'].'</option>';
+}
+echo '</select>';//end select option
 echo '<button type="submit" name="submit" value="submit" class="btn btn-lg btn-block btn-success">Upload File</button>';
 echo '</form>';
 echo '</div>';//end panel-body
@@ -55,13 +63,14 @@ if (isset($_POST['submit']))
 	$tmpName=$_FILES['userfile']['tmp_name'];
 	$fileSize=$_FILES['userfile']['size'];
 	$fileType=$_FILES['userfile']['type'];
+	$category = $_POST['category'];
     $path="uploads/";
 	$fp=fopen($tmpName, 'r');
 	$content=fread($fp, filesize($tmpName));
 	fclose($fp);
 	$con = "";
 	$tags = "";
-	$sql="Insert into `doc` (`file_name`, `file_size`, `file_type`,`upload_by`,`upload_date`,`path`,`content`,`status`, `tags`) values ('$fileName', '$fileSize','$docType','$uploadBy','$uploadDate','$path','$con', '1', '$tags')";
+	$sql="Insert into `doc` (`file_name`, `file_size`, `file_type`, `category`,`upload_by`,`upload_date`,`path`,`content`,`status`, `tags`) values ('$fileName', '$fileSize','$docType','$category','$uploadBy','$uploadDate','$path','$con', '1', '$tags')";
 	$dblink->query($sql) or
 		die("Something went wrong with $sql<br>".$dblink->error);
 	$fp=fopen($path.$fileName,"wb") or

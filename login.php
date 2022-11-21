@@ -10,7 +10,7 @@ if(isset($_POST['login'])){
     $sql = "SELECT * FROM `employee` where `username`='$username' AND `password` = md5('$password')";
     $result = $dblink->query($sql) or die("Something went wrong with $sql<br>".$dblink->error);
     if($result) {
-        $sql = "INSERT INTO `log` (`username`,`action`,`description`,`status`) VALUES('$username',1,'$username login','1')";
+        $sql = "INSERT INTO `log` (`username`,`action`,`description`,`status`) VALUES('$username',1,'$username login',1)";
         $dblink->query($sql) or die("Something went wrong with $sql<br>".$dblink->error);
         echo '<p>Login successfully</p>';
         $data = $result->fetch_array(MYSQLI_ASSOC);
@@ -28,7 +28,21 @@ if(isset($_POST['login'])){
                 });
             </script>';
         header('refresh:1;upload-new.php');
-    }
+    } else {
+		 $sql = "INSERT INTO `log` (`username`,`action`,`description`,`status`) VALUES('$username',1,'$username login',2)";
+        $dblink->query($sql) or die("Something went wrong with $sql<br>".$dblink->error);
+        echo '<p>Login fail</p>';
+		echo '<script type="text/javascript">
+                jQuery(function validation() {
+                    swal({
+                    title: "Error!",
+                    text: "Invalid or incorrect credentials. Please try again",
+                    icon: "error",
+                    button: "Ok",  
+                    });
+                });
+            </script>';
+	}
 }
 
 

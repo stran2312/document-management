@@ -1,10 +1,10 @@
 <?php 
 
 $username = "fyc585";
-$password = "9LfxFQjynvJ2H@\$R";
+$password = '9LfXFQjynvJ2H@$R';
 $data = "username=$username&password=$password";
 $ch = curl_init('https://cs4743.professorvaladez.com/api/create_session');
-curl_setopt($ch, CURLOPT_POST,1):
+curl_setopt($ch, CURLOPT_POST,1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 curl_setopt($ch, CURLOPT_HTTPHEADER, array(
@@ -27,7 +27,7 @@ if($cinfo[0] == "Status: OK" && $cinfo[1] == "MSG: Session Created"){
     echo "Created Session Execution Time: $execution_time\r\n";
     // 
     $ch = curl_init('https://cs4743.professorvaladez.com/api/close_session');
-    curl_setopt($ch, CURLOPT_POST,1):
+    curl_setopt($ch, CURLOPT_POST,1);
     curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, array(
