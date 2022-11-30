@@ -1,12 +1,16 @@
 <?php 
-//$hostname="localhost";
-//$username="webuser";
-//$password="dK!tbUtOynI(.VBx";
-//$dbname = "document";
-//$dblink=new mysqli($hostname,$username,$password,$dbname);
-//if (mysqli_connect_errno()){
-//   die("Error connecting to database: ".mysqli_connect_error());   
-//}
+function db_connect($db){
+	$hostname="localhost";
+    $username="webuser";
+    $password="sT1Y)eQ/KogpGf84";
+    $dblink=new mysqli($hostname,$username,$password,$db);
+	if (mysqli_connect_errno())
+    {
+        die("Error connecting to database: ".mysqli_connect_error());   
+    }
+	return $dblink;
+}
+$dblink = db_connect("document");
 $username = "fyc585";
 $password = '9LfXFQjynvJ2H@$R';
 $data = "username=$username&password=$password";
@@ -86,15 +90,22 @@ if ($cinfo[0] == "Status: OK" && $cinfo[1] == "MSG: Session Created") {
 					fwrite($fp, $content);
 					fclose($fp);
 					echo "\r\n$file written to file system\r\n";
+					$file_array = explode("-",$file);
+					$account_number = $file_array[0];
+					$file_category = $file_array[1];
+					$date_time = $file_array[2];
+					$path = "/var/www/html/receive/";
+					$sql = "INSERT INTO `doc`(`file_name`,`file_type`,`category`,`upload_by`,`upload_date`,`path`,`content`,`status`,`acc_num`) VALUES('$file','pdf','$file_category','SYSTEM','$date_time','$path','','active','$account_number')";
+					$dblink->query($sql) or die("Something went wrong with $sql<br>".$dblink->error);
 				}
-//				$sql = "INSERT INTO `import` (num_files, status) VALUES('$num_files','ok') ";
-//				$dblink->query($sql) or die("Something went wrong with $sql<br>".$dblink->error);
+				$sql = "INSERT INTO `import` (num_files, status) VALUES('$num_files','ok') ";
+				$dblink->query($sql) or die("Something went wrong with $sql<br>".$dblink->error);
 				echo "Query Files Execution Time: $execution_time\r\n";
 			
 		}// end action none
 	} else {
-//		$sql = "INSERT INTO `import` (num_files, status) VALUES('0','error') ";
-//		$dblink->query($sql) or die("Something went wrong with $sql<br>".$dblink->error);
+		$sql = "INSERT INTO `import` (num_files, status) VALUES('0','error') ";
+		$dblink->query($sql) or die("Something went wrong with $sql<br>".$dblink->error);
 		echo $cinfo[0];
         echo "\r\n";
         echo $cinfo[1];

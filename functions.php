@@ -3,7 +3,7 @@
 function db_connect($db){
 	$hostname="localhost";
     $username="webuser";
-    $password="dK!tbUtOynI(.VBx";
+    $password="sT1Y)eQ/KogpGf84";
     $dblink=new mysqli($hostname,$username,$password,$db);
 	if (mysqli_connect_errno())
     {

@@ -55,12 +55,11 @@ if (isset($_POST['submit']))
 	$fileType=$_FILES['userfile']['type'];
 	$category=2;
     $path = "";
-	$tags="";
 	$fp=fopen($tmpName, 'r');
 	$content=fread($fp, filesize($tmpName));
 	fclose($fp);
 	$contentsClean=addslashes($content);
-	$sql="Insert into `doc` (`file_name`, `file_size`, `file_type`,`category` ,`upload_by`,`upload_date`,`path`,`content`,`status`, `tags`) values ('$fileName','$fileSize','$docType','$category','$uploadBy','$uploadDate','$path','$contentsClean','active', '$tags')";
+	$sql="Insert into `doc` (`file_name`, `file_size`, `file_type`,`category` ,`upload_by`,`upload_date`,`path`,`content`,`status`) values ('$fileName','$fileSize','$docType','$category','$uploadBy','$uploadDate','$path','$contentsClean','active')";
 	$dblink->query($sql) or
 		die("Something went wrong with $sql<br>".$dblink->error);
 	//$fp=fopen($path.$fileName,"wb") or
