@@ -11,32 +11,38 @@ while($data = $result->fetch_array(MYSQLI_ASSOC)) {
 	$tmp = explode("-",$data['name']);
 	$total_document += 1;
 	$loanArray[] = $tmp[0];
+	$typeArray[] = $tmp[1];
 }
-echo '<div>Total number of the document is: '.$total_document.'.</div>';
+echo '<div>Total number of the document is: '.$total_document.'.';
 //store the unique loan numbers and the types
 $loanUnique = array_unique($loanArray);
-$sum = 0;
+$typeUnique = array_unique($typeArray);
+$loansComplete = array();
+
 //loop through each loan number
 foreach($loanUnique as $key=>$value){
+	$type = array();
 	//get all of the loans with the same loan numbers
-	$sql = "SELECT count(`name`) from `empty_doc` where `name` LIKE '%$value%'";
+	$sql = "SELECT `name` from `empty_doc` where `name` LIKE '%$value%'";
 	$result = $dblink->query($sql) or die("Seomthing went wrong with $sql<br>.$dblink->error");
-	$tmp = $result->fetch_array(MYSQLI_NUM);
-	$sum += $tmp[0];
-	$loanComplete[$value] = $tmp[0];
-	//page break for easier inspection
-}//end for each
-$average = $sum/count($loanUnique);
-echo '<div>The average number of documents across all loans is: '.$average.'</div>';
-foreach($loanComplete as $key=>$value){
-	echo '<div>Loan Number '.$key.' has '.$value.' documents';
-	if($value < $average){
-		echo ': lower than average</div>';	
-	} else if ($value > $average) {
-		echo ': larger than average</div>';
-	} else {
-		echo ': equal to average</div>';
+	while($data=$result->fetch_array(MYSQLI_ASSOC)){
+		//get all of the types for the given loan number
+		$tmp = explode("-",$data['name']);
+		//record all of the types to $type 
+		array_push($type, $tmp[1]);
+	}// end while
+	/*
+	*Compare the all of the types to the types of the current document
+	*Report the missing document types
+	*/
+	foreach($typeUnique as $p=>$v){
+		if(!in_array($v,$type)){
+			echo '<p>Missing for '.$value.': '.$v.'</p>';
+		}
 	}
-}
+	//page break for easier inspection
+	echo '<br>';
+}//end for each
+
 
 ?>
