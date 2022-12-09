@@ -67,6 +67,9 @@ if ($cinfo[0] == "Status: OK" && $cinfo[1] == "MSG: Session Created") {
 					$file = $tmp[4];
 					if(!isset($file)){
 						echo "0 file to import<br>";
+						$sql = "INSERT INTO `import` (num_files, status) VALUES('0','ok') ";
+						$dblink->query($sql) or die("Something went wrong with $sql<br>".$dblink->error);
+						echo "Query Files Execution Time: $execution_time\r\n";
 						break;
 					}
 					echo "File: $file\r\n";
@@ -85,17 +88,12 @@ if ($cinfo[0] == "Status: OK" && $cinfo[1] == "MSG: Session Created") {
 					$result = curl_exec($ch);
 					$time_end = microtime(true);
 					$execution_time = ($time_end - $time_start)/60;
-					$content = $result;
 					$fp = fopen("/var/www/html/receive/$file","wb");
 					fwrite($fp, $content);
 					fclose($fp);
 					echo "\r\n$file written to file system\r\n";
-					$file_array = explode("-",$file);
-					$account_number = $file_array[0];
-					$file_category = $file_array[1];
-					$date_time = $file_array[2];
 					$path = "/var/www/html/receive/";
-					$sql = "INSERT INTO `doc`(`file_name`,`file_type`,`category`,`upload_by`,`upload_date`,`path`,`content`,`status`,`acc_num`) VALUES('$file','pdf','$file_category','SYSTEM','$date_time','$path','','active','$account_number')";
+					$sql = "INSERT INTO `empty_doc`(`file_name`,`path`,`size`) VALUES('$file','$path','')";
 					$dblink->query($sql) or die("Something went wrong with $sql<br>".$dblink->error);
 				}
 				$sql = "INSERT INTO `import` (num_files, status) VALUES('$num_files','ok') ";
@@ -112,6 +110,8 @@ if ($cinfo[0] == "Status: OK" && $cinfo[1] == "MSG: Session Created") {
         echo "\r\n";
         echo $cinfo[2];
         echo "\r\n";
+		$sql = "INSERT INTO `log` (`info1`, `info2`,`info3`) VALUES('$cinfo[0]','$cinfo[1]','$cinfo[2]') ";
+		$dblink->query($sql) or die("Something went wrong with $sql<br>".$dblink->error);
 	}
 	$data = "sid:$sid";
     $ch = curl_init('https://cs4743.professorvaladez.com/api/close_session');
@@ -139,6 +139,8 @@ if ($cinfo[0] == "Status: OK" && $cinfo[1] == "MSG: Session Created") {
         echo "\r\n";
         echo $cinfo[2];
         echo "\r\n";
+		$sql = "INSERT INTO `log` (`info1`, `info2`,`info3`) VALUES('$cinfo[0]','$cinfo[1]','$cinfo[2]') ";
+		$dblink->query($sql) or die("Something went wrong with $sql<br>".$dblink->error);
     }
     
 }
